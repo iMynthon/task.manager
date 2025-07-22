@@ -29,6 +29,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0")
+	implementation("org.telegram:telegrambots-spring-boot-starter:6.9.7.1")
 	implementation("org.liquibase:liquibase-core")
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	implementation("org.springframework.modulith:spring-modulith-events-api")

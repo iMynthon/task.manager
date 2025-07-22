@@ -1,4 +1,8 @@
 package com.mynthon.task.manager.task.dto.request;
 
-public class TaskRequest {
+public record TaskRequest(
+        String name,
+        String content,
+        String nickname
+) {
 }

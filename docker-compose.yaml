@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    ports:
+      - '5438:5432'
+    environment:
+      - POSTGRES_USER=mynthon
+      - POSTGRES_PASSWORD=cbbbe50f-e3fc-4ab1-8511-b77f65c27a09
+      - POSTGRES_DB=task_manager_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:4.1.2-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    restart: unless-stopped
+    volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
+volumes:
+  pgdata:
+  rabbitmq_data:

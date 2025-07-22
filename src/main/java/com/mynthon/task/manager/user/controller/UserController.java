@@ -3,7 +3,7 @@ package com.mynthon.task.manager.user.controller;
 import com.mynthon.task.manager.user.dto.request.UserRequest;
 import com.mynthon.task.manager.user.dto.response.AllUserResponse;
 import com.mynthon.task.manager.user.dto.response.UserResponse;
-import com.mynthon.task.manager.user.service.UserService;
+import com.mynthon.task.manager.user.internal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
