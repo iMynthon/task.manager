@@ -9,7 +9,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: 'create-drop'
+      ddl-auto: 'update'
   liquibase:
     enabled: false
     drop-first: false
@@ -25,18 +25,25 @@ spring:
     openfeign:
       client:
         config:
-          auth:
-            url: 'http://localhost:8090'
+          task:
+            url: 'http://localhost:8090/api/v1/tasks'
+            connect-timeout: 5000
+            read-timeout: 5000
+            logger-level: BASIC
+          user:
+            url: 'http://localhost:8090/api/v1/users'
             connect-timeout: 5000
             read-timeout: 5000
             logger-level: BASIC
 logging:
   level:
-    social:
-      network:
-        account:
-          openfeign:
-            AccountFeignClient: debug
+    com:
+      mynthon:
+        task:
+          manager:
+            common:
+              feign:
+                TaskFeignClient: debug
   pattern:
     console: '%clr(%d{HH:mm:ss}){faint} %clr(%-5level) %clr([%logger{0}]){cyan} %clr(:){faint} %m%n'
 telegram:

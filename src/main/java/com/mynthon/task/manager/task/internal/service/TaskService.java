@@ -34,6 +34,7 @@ public class TaskService {
 
     public TaskResponse save(TaskRequest request){
         Task task = taskMapper.requestToEntity(request);
+        task.setIsCompleted(false);
         return taskMapper.entityToResponse(taskRepository.save(task));
     }
 
