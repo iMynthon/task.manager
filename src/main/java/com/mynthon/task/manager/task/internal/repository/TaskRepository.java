@@ -12,8 +12,8 @@ public interface TaskRepository extends JpaRepository<Task,Integer> {
     List<Task> findByNicknameIgnoreCase(String nickname);
 
     @Modifying
-    @Query(value = "UPDATE tasks SET is_completed = isCompleted WHERE nickname = :nickname AND name = :name",nativeQuery = true)
-    void isCompletedTrue(String nickname,String name,boolean isCompleted);
+    @Query(value = "UPDATE tasks SET is_completed = :isCompleted WHERE id = :id AND nickname = :nickname",nativeQuery = true)
+    void isCompletedTrue(Integer id,String nickname,boolean isCompleted);
 
     @Modifying
     @Query(value = "DELETE from tasks WHERE nickname = :nickname AND name = :name",nativeQuery = true)

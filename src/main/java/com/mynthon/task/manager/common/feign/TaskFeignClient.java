@@ -1,5 +1,6 @@
 package com.mynthon.task.manager.common.feign;
 
+import com.mynthon.task.manager.task.dto.request.TaskIsCompleted;
 import com.mynthon.task.manager.task.dto.request.TaskRequest;
 import com.mynthon.task.manager.task.dto.response.AllTaskResponse;
 import com.mynthon.task.manager.task.dto.response.TaskResponse;
@@ -17,4 +18,8 @@ public interface TaskFeignClient {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all/me")
     AllTaskResponse findByMeAll(@RequestParam String nickname);
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/isCompleted")
+    String updateIsCompleted(@RequestBody TaskIsCompleted isCompleted);
 }

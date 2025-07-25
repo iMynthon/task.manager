@@ -1,8 +1,8 @@
 package com.mynthon.task.manager.task.dto.request;
 
 public record TaskIsCompleted(
+        Integer id,
         String nickname,
-        String name,
         Boolean isCompleted
 ) {
 }

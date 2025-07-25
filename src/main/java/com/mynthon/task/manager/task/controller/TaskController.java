@@ -36,7 +36,7 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/isCompleted")
-    private String updateIsCompleted(TaskIsCompleted isCompleted){
+    private String updateIsCompleted(@RequestBody TaskIsCompleted isCompleted){
         return taskService.isCompleted(isCompleted);
     }
 
