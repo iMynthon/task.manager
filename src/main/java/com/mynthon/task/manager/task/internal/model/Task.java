@@ -1,12 +1,12 @@
 package com.mynthon.task.manager.task.internal.model;
 
+import com.mynthon.task.manager.user.internal.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDate;
 
 @Getter @Setter
@@ -18,7 +18,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nickname;
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String name;
 

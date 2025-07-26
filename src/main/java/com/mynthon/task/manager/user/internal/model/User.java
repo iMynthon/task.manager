@@ -1,10 +1,16 @@
 package com.mynthon.task.manager.user.internal.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.mynthon.task.manager.reminder.internal.model.Reminder;
+import com.mynthon.task.manager.task.internal.model.Task;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.util.List;
 
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Entity(name = "users")
 public class User {
 
@@ -12,9 +18,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nickname;
+    private String username;
 
     private String email;
 
-    private String password;
+    private Long chatId;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Task> taskList;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Reminder> reminderList;
 }

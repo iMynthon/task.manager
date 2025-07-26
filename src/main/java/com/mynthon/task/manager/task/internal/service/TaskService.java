@@ -1,5 +1,6 @@
 package com.mynthon.task.manager.task.internal.service;
 
+import com.mynthon.task.manager.common.configuration.EventConfig;
 import com.mynthon.task.manager.common.exception.EntityNotFoundException;
 import com.mynthon.task.manager.task.dto.request.TaskDeleteRequest;
 import com.mynthon.task.manager.task.dto.request.TaskIsCompleted;
@@ -8,9 +9,11 @@ import com.mynthon.task.manager.task.dto.response.AllTaskResponse;
 import com.mynthon.task.manager.task.dto.response.TaskResponse;
 import com.mynthon.task.manager.task.internal.mapper.TaskMapper;
 import com.mynthon.task.manager.task.internal.model.Task;
+import com.mynthon.task.manager.task.internal.model.TaskEvent;
 import com.mynthon.task.manager.task.internal.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public TaskResponse findById(Integer id){
@@ -40,6 +44,7 @@ public class TaskService {
         log.info("Сохранение новой задачи - {}",request);
         Task task = taskMapper.requestToEntity(request);
         task.setIsCompleted(false);
+        eventPublisher.publishEvent(new TaskEvent(task));
         return taskMapper.entityToResponse(taskRepository.save(task));
     }
 

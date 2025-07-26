@@ -36,6 +36,7 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	implementation("org.springframework.modulith:spring-modulith-events-api")
 	implementation("org.springframework.modulith:spring-modulith-starter-core")
+	implementation("org.springframework.modulith:spring-modulith-events-amqp")
 	implementation("org.springframework.modulith:spring-modulith-starter-jpa")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")

@@ -11,43 +11,50 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    private final String ADD_TASK_QUEUE = "queue.add.task";
-    private final String MODULE_TASK_TOPIC = "module.task.topic";
-    private final String MODULE_TASK_EVENT = "module.task.event";
+    public static final String TASK_QUEUE_KEY = "key.task.queue";
+    public static final String TASK_EVENTS_TOPIC = "module.task.events.topic";
+    public static final String TASK_EVENTS_EXCHANGE = "module.task.events.exchange";
 
     @Bean
-    public Queue userAddTaskQueue(){
-        return QueueBuilder.durable(ADD_TASK_QUEUE)
+    public Queue taskQueue() {
+        return QueueBuilder.durable(TASK_QUEUE_KEY)
+                .withArgument("x-dead-letter-exchange", "")
+                .withArgument("x-dead-letter-routing-key", TASK_QUEUE_KEY + ".dlq")
                 .build();
     }
 
     @Bean
-    public TopicExchange addTaskTopicExchange(){
-        return ExchangeBuilder.topicExchange(MODULE_TASK_TOPIC)
+    public TopicExchange taskEventsTopicExchange() {
+        return ExchangeBuilder.topicExchange(TASK_EVENTS_TOPIC)
                 .durable(true)
                 .build();
     }
 
     @Bean
-    public DirectExchange directExchangeAddTaskQueue(){
-        return ExchangeBuilder.directExchange(MODULE_TASK_EVENT)
+    public DirectExchange taskEventsExchange() {
+        return ExchangeBuilder.directExchange(TASK_EVENTS_EXCHANGE)
                 .durable(true)
                 .build();
     }
 
     @Bean
-    public Binding userAddTaskQueueBinding(){
-        return BindingBuilder.bind(userAddTaskQueue())
-                .to(directExchangeAddTaskQueue())
-                .with(ADD_TASK_QUEUE);
+    public Binding taskQueueBinding() {
+        return BindingBuilder.bind(taskQueue())
+                .to(taskEventsExchange())
+                .with(TASK_QUEUE_KEY);
     }
 
     @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter(){
+    public Jackson2JsonMessageConverter messageConverter() {
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
                 .addModule(new ParameterNamesModule())
                 .build();
         return new Jackson2JsonMessageConverter(objectMapper);
+    }
+
+    @Bean
+    public Queue taskQueueDlq() {
+        return QueueBuilder.durable(TASK_QUEUE_KEY + ".dlq").build();
     }
 }
