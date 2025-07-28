@@ -5,6 +5,7 @@ import com.mynthon.task.manager.task.dto.response.AllTaskResponse;
 import com.mynthon.task.manager.task.dto.response.TaskResponse;
 import com.mynthon.task.manager.task.internal.model.Task;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
@@ -14,6 +15,7 @@ import java.util.List;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TaskMapper {
 
+    @Mapping(target = "user",ignore = true)
     Task requestToEntity(TaskRequest request);
 
     TaskResponse entityToResponse(Task task);

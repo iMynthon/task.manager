@@ -21,7 +21,7 @@ public class Reminder {
     private UUID id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_username")
     private User user;
 
     private Long chatId;

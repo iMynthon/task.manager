@@ -3,15 +3,14 @@ package com.mynthon.task.manager.user.internal.model;
 import com.mynthon.task.manager.reminder.internal.model.Reminder;
 import com.mynthon.task.manager.task.internal.model.Task;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Entity(name = "users")
+@Builder
 public class User {
 
     @Id

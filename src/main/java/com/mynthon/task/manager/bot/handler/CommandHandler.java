@@ -131,7 +131,8 @@ public class CommandHandler {
 
     private SendMessage createSendMessageFromTask(Long chatId,TaskRequest request,
                                                   String username,String operationTask){
-        request.setNickname(username);
+        request.setUsername(username);
+        request.setChatId(chatId);
         stateUserEdit.remove(chatId);
         createTaskRequest.put(chatId, request);
         log.info("Сохранение описания задачи - {} - {}", username, request);

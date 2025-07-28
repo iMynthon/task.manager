@@ -9,13 +9,14 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task,Integer> {
 
-    List<Task> findByNicknameIgnoreCase(String nickname);
+
+    List<Task> findByUserUsernameIgnoreCase(String username);
 
     @Modifying
-    @Query(value = "UPDATE tasks SET is_completed = :isCompleted WHERE id = :id AND nickname = :nickname",nativeQuery = true)
-    void isCompletedTrue(Integer id,String nickname,boolean isCompleted);
+    @Query(value = "UPDATE tasks SET is_completed = :isCompleted WHERE id = :id AND user_username = :username",nativeQuery = true)
+    void isCompletedTrue(Integer id,String username,boolean isCompleted);
 
     @Modifying
-    @Query(value = "DELETE from tasks WHERE nickname = :nickname AND name = :name",nativeQuery = true)
-    void deleteTask(String nickname,String name);
+    @Query(value = "DELETE from tasks WHERE user_username = :username AND name = :name",nativeQuery = true)
+    void deleteTask(String username,String name);
 }

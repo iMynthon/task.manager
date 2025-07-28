@@ -2,33 +2,19 @@ package com.mynthon.task.manager.task.dto.request;
 
 import lombok.*;
 
-import java.util.Objects;
-
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class TaskRequest{
 
     private String name;
+    @EqualsAndHashCode.Exclude
     private String content;
-    private String nickname;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TaskRequest that = (TaskRequest) o;
-        return Objects.equals(name, that.name) &&
-                Objects.equals(content, that.content) &&
-                Objects.equals(nickname, that.nickname);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, content, nickname);
-    }
+    private String username;
+    private Long chatId;
 
     public boolean isComplete() {
-        return name != null && content != null && nickname != null;
+        return name != null && content != null && username != null;
     }
 }
