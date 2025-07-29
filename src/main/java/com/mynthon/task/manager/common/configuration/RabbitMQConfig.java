@@ -20,8 +20,19 @@ import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 public class RabbitMQConfig {
 
     public static final String TASK_QUEUE_KEY = "key.task.queue";
+    public static final String REMINDER_QUEUE_KEY = "key.reminder.queue";
+    public static final String USER_REMINDER_TASK = "key.reminder.task.queue";
+
     public static final String TASK_EVENTS_EXCHANGE = "module.task.events.exchange";
-    public static final String DLX_EXCHANGE = "dlx.exchange"; // Добавляем константу для DLX
+    public static final String REMINDER_EVENTS_EXCHANGE = "module.reminder.events.exchange";
+
+    public static final String DLX_EXCHANGE = "dlx.exchange";
+
+    @Bean
+    public Queue userQueue(){
+        return QueueBuilder.durable(USER_REMINDER_TASK)
+                .build();
+    }
 
     @Bean
     public Queue taskQueue() {
@@ -29,6 +40,11 @@ public class RabbitMQConfig {
                 .build();
     }
 
+    @Bean
+    public Queue reminderQueue(){
+        return QueueBuilder.durable(REMINDER_QUEUE_KEY)
+                .build();
+    }
 
     @Bean
     public DirectExchange taskEventsExchange() {
@@ -38,10 +54,29 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public TopicExchange reminderTopicExchange(){
+        return ExchangeBuilder.topicExchange(REMINDER_EVENTS_EXCHANGE)
+                .durable(true)
+                .build();
+    }
+
+    @Bean
     public Binding taskQueueBinding() {
         return BindingBuilder.bind(taskQueue())
                 .to(taskEventsExchange())
                 .with(TASK_QUEUE_KEY);
+    }
+
+
+    @Bean
+    public Binding[] reminderQueueBinding() {
+        return new Binding[]{
+                BindingBuilder.bind(reminderQueue())
+                        .to(reminderTopicExchange())
+                        .with(REMINDER_QUEUE_KEY),
+                BindingBuilder.bind(userQueue())
+                        .to(reminderTopicExchange())
+                        .with(USER_REMINDER_TASK)};
     }
 
     @Bean
@@ -70,8 +105,8 @@ public class RabbitMQConfig {
     public MessageRecoverer messageRecoverer(RabbitTemplate rabbitTemplate) {
         return new RepublishMessageRecoverer(
                 rabbitTemplate,
-                DLX_EXCHANGE, // Используем наш DLX
-                TASK_QUEUE_KEY + ".dlq" // Правильный routing key
+                DLX_EXCHANGE,
+                TASK_QUEUE_KEY + ".dlq"
         );
     }
     @Bean

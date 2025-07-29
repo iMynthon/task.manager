@@ -16,7 +16,7 @@ public class UserListener {
 
     private final UserRepository userRepository;
 
-    @RabbitListener(queues = "#{@taskQueue}",containerFactory = "rabbitListenerContainerFactory")
+    @RabbitListener(queues = "#{@taskQueue}")
     public void handleTaskAssignment(@Payload Task task) {
         log.info("Получено задание из RabbitMQ - {}",task);
         User user = userRepository.findByUsername(task.getUser().getUsername())
