@@ -12,7 +12,9 @@ import com.mynthon.task.manager.task.internal.repository.TaskRepository;
 import com.mynthon.task.manager.user.internal.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +29,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final RabbitTemplate rabbitTemplate;
+    private final ApplicationContext context;
 
-    @Transactional(readOnly = true)
-    public TaskResponse findById(Integer id){
+    public TaskResponse findByIdToResponse(Integer id){
         log.info("Запрос задачи по id - {}",id);
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Task под таким идентификатором - {%s} не найдена",id)));
+        Task task = context.getBean(TaskService.class).findById(id);
         return taskMapper.entityToResponse(task);
     }
 
@@ -68,5 +69,11 @@ public class TaskService {
 
     private User createUser(String username,Long chatId){
         return User.builder().username(username).chatId(chatId).build();
+    }
+
+    @Transactional(readOnly = true)
+    public Task findById(Integer id){
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Task под таким идентификатором - {%s} не найдена",id)));
     }
 }

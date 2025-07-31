@@ -21,6 +21,7 @@ public class User {
 
     private String email;
 
+    @Column(name = "chat_id")
     private Long chatId;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)

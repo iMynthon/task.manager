@@ -16,11 +16,11 @@ import java.util.UUID;
 public class Reminder {
 
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "user_username")
+    @JoinColumn(name = "user_username",referencedColumnName = "username")
     private User user;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})

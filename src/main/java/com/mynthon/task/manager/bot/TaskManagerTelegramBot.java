@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
@@ -69,6 +68,7 @@ public class TaskManagerTelegramBot extends TelegramLongPollingBot{
                 new BotCommand("/help","Список доступных команд"),
                 new BotCommand("/registered","Регистрация"),
                 new BotCommand("/add_task","Добавление задачи"),
-                new BotCommand("/tasks","Посмотреть все свои задачи"));
+                new BotCommand("/tasks","Посмотреть все свои задачи"),
+                new BotCommand("/reminder_task","Поставить напоминание"));
     }
 }

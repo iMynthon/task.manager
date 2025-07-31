@@ -21,9 +21,9 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: 'update'
+      ddl-auto: 'none'
   liquibase:
-    enabled: false
+    enabled: true
     drop-first: false
   datasource:
     url: jdbc:postgresql://localhost:5438/task_manager_db?currentSchema=task_schema

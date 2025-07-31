@@ -7,8 +7,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import static com.mynthon.task.manager.bot.handler.ReminderHandler.stateUserReminderEdit;
 import static com.mynthon.task.manager.bot.handler.TaskHandler.stateUserTaskEdit;
 import static com.mynthon.task.manager.bot.utils.StringTelegramBotCommand.*;
-import static com.mynthon.task.manager.bot.utils.StringUtils.REMINDER_TASK_NAME;
-import static com.mynthon.task.manager.bot.utils.StringUtils.REMINDER_TASK_TIME;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class CommandHandler {
             case TASK -> taskHandler.getTasks(chatId, username);
             case EDIT_TASK_NAME,EDIT_TASK_CONTENT -> taskHandler.handleTaskEditor(chatId,message);
             case REMINDER_TASK -> reminderHandler.inlineKeyboardNewReminder(chatId);
-            case REMINDER_TASK_NAME,REMINDER_TASK_TIME -> reminderHandler.handlerReminderEditor(chatId,message);
+            case REMINDER_TASK_ID, REMINDER_TIME -> reminderHandler.handlerReminderEditor(chatId,message);
             default -> SendMessage.builder().chatId(chatId).text(username).text("Неизвестная команда").build();
         };
     }
@@ -51,6 +49,9 @@ public class CommandHandler {
         if(state.equals(EDIT_TASK_NAME) || state.equals(EDIT_TASK_CONTENT)){
             log.info("Создание задачи пользователем - {} - {}",username,message);
             sendMessage = taskHandler.saveEditHandler(state, message, username, chatId);
+        } else if (state.equals(REMINDER_TASK_ID) || state.equals(REMINDER_TIME)) {
+            log.info("Создание напоминание для пользователя - {}",username);
+            sendMessage = reminderHandler.createReminder(chatId,username,message,state);
         }
         log.info("Поймано сообщение пользователя - {} - {}", username, message);
         if(message.contains(TASK_COMPLETE)){
@@ -75,6 +76,7 @@ public class CommandHandler {
                 /help -> Просмотр всех команд бота
                 /add_task -> Добавление задачи. Вводится по очереди 2 поля: {название задачи} - {описание задачи}.
                 /tasks -> Просмотр всех своих задач.
+                /reminder_task -> Поставить напоминание или запланировать выполнение задачи
                 """;
         return new SendMessage(chatId.toString(), commandsHelp);
     }

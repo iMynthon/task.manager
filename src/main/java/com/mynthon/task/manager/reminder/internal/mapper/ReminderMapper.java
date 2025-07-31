@@ -17,7 +17,7 @@ public interface ReminderMapper {
 
     @Mapping(target = "user.username",source = "username")
     @Mapping(target = "user.chatId",source = "chatId")
-    @Mapping(target = "task.name",source = "taskName")
+    @Mapping(target = "task.id",source = "taskId")
     Reminder requestToEntity(ReminderRequest request);
 
     @Mapping(target = "username",source = "user.username")

@@ -19,7 +19,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/me")
     private TaskResponse findById(@PathVariable Integer id){
-        return taskService.findById(id);
+        return taskService.findByIdToResponse(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -15,11 +15,11 @@ public class ReminderRequest{
 
     private Long chatId;
 
-    private String taskName;
+    private Integer taskId;
 
     private LocalDateTime time;
 
     public boolean isComplete() {
-        return username != null && chatId != null && taskName != null && time != null;
+        return username != null && chatId != null && taskId != null && time != null;
     }
 }

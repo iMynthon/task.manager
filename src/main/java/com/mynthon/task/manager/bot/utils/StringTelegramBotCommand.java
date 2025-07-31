@@ -1,6 +1,6 @@
 package com.mynthon.task.manager.bot.utils;
 
-public class StringTelegramBotCommand<T> {
+public class StringTelegramBotCommand {
     public static final String START = "/start";
     public static final String HELP = "/help";
     public static final String REGISTERED = "/registered";
@@ -10,5 +10,6 @@ public class StringTelegramBotCommand<T> {
     public static final String EDIT_TASK_NAME = "Название задачи";
     public static final String EDIT_TASK_CONTENT = "Описание задачи";
     public static final String REMINDER_TASK = "/reminder_task";
-    public static final String TIME_REMINDER = "Время напоминания";
+    public static final String REMINDER_TASK_ID = "Идентификатор задачи для напоминания";
+    public static final String REMINDER_TIME = "Время напоминания";
 }

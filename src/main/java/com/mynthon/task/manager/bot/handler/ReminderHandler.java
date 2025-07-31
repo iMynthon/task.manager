@@ -1,9 +1,6 @@
 package com.mynthon.task.manager.bot.handler;
 
-import com.mynthon.task.manager.bot.utils.StringTelegramBotCommand;
-import com.mynthon.task.manager.common.configuration.RabbitMQConfig;
 import com.mynthon.task.manager.reminder.dto.request.ReminderRequest;
-import com.mynthon.task.manager.task.dto.request.TaskRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,13 +11,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.mynthon.task.manager.bot.utils.StringTelegramBotCommand.*;
 import static com.mynthon.task.manager.bot.utils.StringUtils.*;
-import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.REMINDER_EVENTS_EXCHANGE;
 import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.REMINDER_QUEUE_KEY;
 
 @Slf4j
@@ -44,15 +41,15 @@ public class ReminderHandler {
 
     public SendMessage handlerReminderEditor(Long chatId,String reminderRequest){
         switch (reminderRequest) {
-            case EDIT_TASK_NAME -> {
+            case REMINDER_TASK_ID -> {
                 log.info("Изменение названия задачи - {} - {}", chatId, reminderRequest);
                 stateUserReminderEdit.put(chatId, reminderRequest);
-                return new SendMessage(chatId.toString(), "Введите название задачи:");
+                return new SendMessage(chatId.toString(), "Введите идентификатор {id} задачи:");
             }
-            case TIME_REMINDER -> {
+            case REMINDER_TIME -> {
                 log.info("Изменение описания задачи - {} - {}", chatId, reminderRequest);
                 stateUserReminderEdit.put(chatId, reminderRequest);
-                return new SendMessage(chatId.toString(), "Введите время напоминания:");
+                return new SendMessage(chatId.toString(), "Введите время напоминания в формате - {2025.12.30 18:00}:");
             }
             default -> {
                 return new SendMessage(chatId.toString(), "Неизвестное действие");
@@ -64,20 +61,22 @@ public class ReminderHandler {
         SendMessage sendMessage = new SendMessage();
         ReminderRequest request = createReminderRequest.getOrDefault(chatId,ReminderRequest.builder()
                 .build());
-        if (state.equals(EDIT_TASK_NAME)) {
-            request.setTaskName(message);
-            sendMessage = createSendMessageFromReminder(chatId,request,username,message);
-        } else if (state.equals(TIME_REMINDER)) {
-            request.setTime(LocalDateTime.parse(message));
-            sendMessage = createSendMessageFromReminder(chatId,request,username,message);
+        if (state.equals(REMINDER_TASK_ID)) {
+            request.setTaskId(Integer.parseInt(message));
+            sendMessage = createSendMessageFromReminder(chatId,request,username, REMINDER_TASK_ID);
+        } else if (state.equals(REMINDER_TIME)) {
+            request.setTime(LocalDateTime.parse(message, DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")));
+            sendMessage = createSendMessageFromReminder(chatId,request,username,
+                    REMINDER_TIME + ": " + request.getTime());
         }
         if(request.isComplete()){
-            rabbitTemplate.convertAndSend(REMINDER_EVENTS_EXCHANGE,REMINDER_QUEUE_KEY,request);
+            log.info("Отправка напоминания в слушатель событий - {}",request.getUsername());
+            rabbitTemplate.convertAndSend(REMINDER_QUEUE_KEY,request);
             createReminderRequest.remove(chatId);
             stateUserReminderEdit.remove(chatId);
             sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
             sendMessage.setChatId(chatId);
-            sendMessage.setText(REMINDER_CREATE);
+            sendMessage.setText(REMINDER_CREATE + ": " + request.getTime());
             return sendMessage;
         }
         return sendMessage;
@@ -89,25 +88,26 @@ public class ReminderHandler {
         request.setChatId(chatId);
         stateUserReminderEdit.remove(chatId);
         createReminderRequest.put(chatId, request);
-        log.info("Сохранение описания задачи - {} - {}", username, request);
+        log.info("Сохранение напоминания - {} - {}", username, request.getTaskId());
         return SendMessage.builder()
                 .chatId(chatId)
-                .text(operationTask.equals(EDIT_TASK_NAME) ? TASK_NAME_CREATE : TASK_CONTENT_CREATE)
+                .text(operationTask.equals(REMINDER_TASK_ID) ? REMINDER_SAVE_TASK_NAME : REMINDER_SAVE_TASK_TIME)
                 .replyMarkup(request.isComplete() ? null :
-                        keyboardMarkupReminderTask(operationTask.equals(EDIT_TASK_NAME) ? EDIT_TASK_NAME : EDIT_TASK_CONTENT))
+                        keyboardMarkupReminderTask(operationTask.equals(REMINDER_TASK_ID) ? REMINDER_TASK_ID
+                                : REMINDER_TIME))
                 .build();
     }
 
     private ReplyKeyboardMarkup keyboardMarkupReminderTask(String reminder){
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         KeyboardRow key1 = new KeyboardRow();
-        if(reminder.equals(EDIT_TASK_NAME)){
-            key1.add(TIME_REMINDER);
-        } else if (reminder.equals(TIME_REMINDER)){
-            key1.add(EDIT_TASK_NAME);
+        if(reminder.equals(REMINDER_TASK_ID)){
+            key1.add(REMINDER_TIME);
+        } else if (reminder.equals(REMINDER_TIME)){
+            key1.add(REMINDER_TASK_ID);
         } else {
-            key1.add(EDIT_TASK_NAME);
-            key1.add(TIME_REMINDER);
+            key1.add(REMINDER_TASK_ID);
+            key1.add(REMINDER_TIME);
         }
         keyboardMarkup.setKeyboard(List.of(key1));
         keyboardMarkup.setResizeKeyboard(true);
