@@ -7,5 +7,4 @@ public class StringUtils {
     public static final String REMINDER_SAVE_TASK_NAME = "Название вашей задачи зафиксировано, выполните следующее действие";
     public static final String REMINDER_SAVE_TASK_TIME = "Напоминание для вашей задачи сохранено, выполните следующее действие";
     public static final String REMINDER_CREATE = "Новое напоминание успешно сохранено";
-
 }

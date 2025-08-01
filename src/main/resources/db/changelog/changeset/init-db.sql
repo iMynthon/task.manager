@@ -28,6 +28,7 @@ CREATE TABLE reminders(
    task_id INTEGER NOT NULL,
    chat_id BIGINT NOT NULL,
    time TIMESTAMP NOT NULL,
+   status VARCHAR(15) NOT NULL,
    CONSTRAINT fk_reminder_user FOREIGN KEY (user_username) REFERENCES users(username),
    CONSTRAINT fk_reminder_task FOREIGN KEY (task_id) REFERENCES tasks(id)
 );

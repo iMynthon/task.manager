@@ -1,5 +1,6 @@
 package com.mynthon.task.manager.bot.handler;
 
+import com.mynthon.task.manager.common.configuration.RabbitMQConfig;
 import com.mynthon.task.manager.reminder.dto.request.ReminderRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,9 @@ import java.util.Map;
 
 import static com.mynthon.task.manager.bot.utils.StringTelegramBotCommand.*;
 import static com.mynthon.task.manager.bot.utils.StringUtils.*;
-import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.REMINDER_QUEUE_KEY;
+import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.MAIN_EVENTS_TOPIC;
+import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.REMINDER_RT_KEY;
+import static com.mynthon.task.manager.reminder.internal.model.ReminderStatus.PENDING;
 
 @Slf4j
 @Component
@@ -71,7 +74,8 @@ public class ReminderHandler {
         }
         if(request.isComplete()){
             log.info("Отправка напоминания в слушатель событий - {}",request.getUsername());
-            rabbitTemplate.convertAndSend(REMINDER_QUEUE_KEY,request);
+            request.setStatus(PENDING);
+            rabbitTemplate.convertAndSend(MAIN_EVENTS_TOPIC, REMINDER_RT_KEY,request);
             createReminderRequest.remove(chatId);
             stateUserReminderEdit.remove(chatId);
             sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));

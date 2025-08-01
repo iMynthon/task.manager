@@ -11,12 +11,6 @@ spring:
     port: 5672
     username: admin
     password: password
-  modulith:
-    events:
-      externalization:
-        enabled: true
-      rabbitmq:
-        enable-json: true
   jpa:
     show-sql: true
     open-in-view: false

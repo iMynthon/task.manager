@@ -16,74 +16,90 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String TASK_QUEUE_KEY = "key.task.queue";
-    public static final String REMINDER_QUEUE_KEY = "key.reminder.queue";
-    public static final String USER_REMINDER_TASK = "key.reminder.task.queue";
+    public static final String TASK_QUEUE = "key.task.queue";
+    public static final String REMINDER_QUEUE = "key.reminder.queue";
+    public static final String USER_REMINDER_QUEUE = "key.reminder.task.queue";
 
-    public static final String TASK_EVENTS_EXCHANGE = "module.task.events.exchange";
-    public static final String REMINDER_EVENTS_EXCHANGE = "module.reminder.events.exchange";
 
+    public static final String TASK_RT_KEY = "*.task.queue";
+    public static final String REMINDER_RT_KEY = "*.reminder.queue";
+    public static final String USER_REMINDER_RT_KEY = "*.reminder.task.queue";
+
+    public static final String MAIN_EVENTS_TOPIC = "task.manager.events.exchange";
+    public static final String REMINDER_EVENTS_EXCHANGE = "module.reminder.delayed.exchange";
     public static final String DLX_EXCHANGE = "dlx.exchange";
 
     @Bean
     public Queue userQueue(){
-        return QueueBuilder.durable(USER_REMINDER_TASK)
+        return QueueBuilder.durable(USER_REMINDER_QUEUE)
                 .build();
     }
 
     @Bean
     public Queue taskQueue() {
-        return QueueBuilder.durable(TASK_QUEUE_KEY)
+        return QueueBuilder.durable(TASK_QUEUE)
                 .build();
     }
 
     @Bean
     public Queue reminderQueue(){
-        return QueueBuilder.durable(REMINDER_QUEUE_KEY)
+        return QueueBuilder.durable(REMINDER_QUEUE)
                 .build();
     }
 
     @Bean
-    public DirectExchange taskEventsExchange() {
-        return ExchangeBuilder.directExchange(TASK_EVENTS_EXCHANGE)
+    public TopicExchange topicTaskManager() {
+        return ExchangeBuilder.topicExchange(MAIN_EVENTS_TOPIC)
                 .durable(true)
                 .build();
     }
 
     @Bean
-    public TopicExchange reminderTopicExchange(){
-        return ExchangeBuilder.topicExchange(REMINDER_EVENTS_EXCHANGE)
-                .durable(true)
-                .build();
+    public CustomExchange delayedReminderExchange() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-delayed-type", "direct");
+
+        return new CustomExchange(
+                REMINDER_EVENTS_EXCHANGE,
+                "x-delayed-message",
+                true,
+                false,
+                args
+        );
     }
 
     @Bean
-    public Binding taskQueueBinding() {
+    public Binding reminderBind(){
+        return BindingBuilder.bind(reminderQueue())
+                .to(topicTaskManager())
+                .with(REMINDER_RT_KEY);
+    }
+
+    @Bean
+    public Binding userBind(){
+        return BindingBuilder.bind(userQueue())
+                .to(delayedReminderExchange())
+                .with(USER_REMINDER_RT_KEY).noargs();
+    }
+
+    @Bean
+    public Binding taskBind(){
         return BindingBuilder.bind(taskQueue())
-                .to(taskEventsExchange())
-                .with(TASK_QUEUE_KEY);
-    }
-
-
-    @Bean
-    public Binding[] reminderQueueBinding() {
-        return new Binding[]{
-                BindingBuilder.bind(reminderQueue())
-                        .to(reminderTopicExchange())
-                        .with(REMINDER_QUEUE_KEY),
-                BindingBuilder.bind(userQueue())
-                        .to(reminderTopicExchange())
-                        .with(USER_REMINDER_TASK)};
+                .to(topicTaskManager())
+                .with(TASK_RT_KEY);
     }
 
     @Bean
     public Queue taskQueueDlq() {
-        return QueueBuilder.durable(TASK_QUEUE_KEY + ".dlq")
+        return QueueBuilder.durable("error.message.dlq")
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE) // Указываем наш DLX
-                .withArgument("x-dead-letter-routing-key", TASK_QUEUE_KEY + ".dlq")
+                .withArgument("x-dead-letter-routing-key", "error.message.dlq")
                 .build();
     }
 
@@ -98,7 +114,7 @@ public class RabbitMQConfig {
     public Binding dlqBinding() {
         return BindingBuilder.bind(taskQueueDlq())
                 .to(dlxExchange())
-                .with(TASK_QUEUE_KEY + ".dlq");
+                .with("error.message.dlq");
     }
 
     @Bean
@@ -106,7 +122,7 @@ public class RabbitMQConfig {
         return new RepublishMessageRecoverer(
                 rabbitTemplate,
                 DLX_EXCHANGE,
-                TASK_QUEUE_KEY + ".dlq"
+                "error.message.dlq"
         );
     }
     @Bean

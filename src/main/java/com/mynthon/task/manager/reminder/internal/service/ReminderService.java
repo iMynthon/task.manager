@@ -4,6 +4,7 @@ import com.mynthon.task.manager.reminder.dto.response.AllReminderResponse;
 import com.mynthon.task.manager.reminder.dto.response.ReminderResponse;
 import com.mynthon.task.manager.reminder.internal.mapper.ReminderMapper;
 import com.mynthon.task.manager.reminder.internal.model.Reminder;
+import com.mynthon.task.manager.reminder.internal.model.ReminderStatus;
 import com.mynthon.task.manager.reminder.internal.repository.ReminderRepository;
 import com.mynthon.task.manager.task.internal.model.Task;
 import com.mynthon.task.manager.task.internal.service.TaskService;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.mynthon.task.manager.reminder.internal.model.ReminderStatus.SENT;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class ReminderService {
         Task task = taskService.findById(request.getTaskId());
         reminder.setTask(task);
         reminder.setUser(task.getUser());
-        return reminderMapper.entityToResponse(reminder);
+        return reminderMapper.entityToResponse(reminderRepository.save(reminder));
     }
 
     @Transactional(readOnly = true)
@@ -41,5 +44,10 @@ public class ReminderService {
     public String deleteReminder(Integer id){
         reminderRepository.deleteById(id);
         return String.format("Напоминание под идентификатором - %s успешно удалено",id);
+    }
+
+    @Transactional
+    public void setReminderStatus(Integer id){
+        reminderRepository.setStatusReminder(SENT,id);
     }
 }

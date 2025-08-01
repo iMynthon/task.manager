@@ -18,8 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.TASK_EVENTS_EXCHANGE;
-import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.TASK_QUEUE_KEY;
+import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +47,8 @@ public class TaskService {
         Task task = taskMapper.requestToEntity(request);
         task.setIsCompleted(false);
         task.setUser(createUser(request.getUsername(),request.getChatId()));
-        rabbitTemplate.convertAndSend(TASK_EVENTS_EXCHANGE,TASK_QUEUE_KEY,task);
+        log.info("Отправка сообщения с помощью RabbitMQ");
+        rabbitTemplate.convertAndSend(MAIN_EVENTS_TOPIC,TASK_RT_KEY,task);
         return taskMapper.entityToResponse(taskRepository.save(task));
     }
 

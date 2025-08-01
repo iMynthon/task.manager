@@ -31,4 +31,7 @@ public class Reminder {
 
     private LocalDateTime time;
 
+    @Enumerated(EnumType.STRING)
+    private ReminderStatus status;
+
 }

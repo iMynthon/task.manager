@@ -98,12 +98,12 @@ public class TaskHandler {
             sendMessage = createSendMessageFromTask(chatId,request,username,EDIT_TASK_CONTENT);
         }
         if (request.isComplete()) {
-            taskFeignClient.save(request);
+            TaskResponse response = taskFeignClient.save(request);
             createTaskRequest.remove(chatId);
             stateUserTaskEdit.remove(chatId);
             sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
             sendMessage.setChatId(chatId);
-            sendMessage.setText(TASK_CREATE);
+            sendMessage.setText(String.format("%s: id - %s, name - %s",TASK_CREATE,response.id(),response.name()));
             return sendMessage;
         }
         return sendMessage;

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ReminderResponse(
+        Integer id,
         String username,
         Long chatId,
         String taskName,

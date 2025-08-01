@@ -1,6 +1,7 @@
 package com.mynthon.task.manager.reminder.dto.request;
 
 
+import com.mynthon.task.manager.reminder.internal.model.ReminderStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ public class ReminderRequest{
     private Integer taskId;
 
     private LocalDateTime time;
+
+    private ReminderStatus status;
 
     public boolean isComplete() {
         return username != null && chatId != null && taskId != null && time != null;
