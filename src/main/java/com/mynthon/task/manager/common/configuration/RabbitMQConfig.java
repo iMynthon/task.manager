@@ -61,17 +61,10 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public CustomExchange delayedReminderExchange() {
-        Map<String, Object> args = new HashMap<>();
-        args.put("x-delayed-type", "direct");
-
-        return new CustomExchange(
-                REMINDER_EVENTS_EXCHANGE,
-                "x-delayed-message",
-                true,
-                false,
-                args
-        );
+    public DirectExchange delayedReminderExchange() {
+        return ExchangeBuilder.directExchange(REMINDER_EVENTS_EXCHANGE)
+                .durable(true)
+                .build();
     }
 
     @Bean
@@ -85,7 +78,7 @@ public class RabbitMQConfig {
     public Binding userBind(){
         return BindingBuilder.bind(userQueue())
                 .to(delayedReminderExchange())
-                .with(USER_REMINDER_RT_KEY).noargs();
+                .with(USER_REMINDER_RT_KEY);
     }
 
     @Bean

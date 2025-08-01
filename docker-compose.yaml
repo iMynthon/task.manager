@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   rabbitmq:
-    image: rabbitmq:3.12-management-alpine
+    image: rabbitmq:4.1.2-management-alpine
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -22,14 +22,7 @@ services:
       RABBITMQ_DEFAULT_PASS: password
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-      - ./rabbitmq_delayed_message_exchange-3.12.0.ez:/plugins/rabbitmq_delayed_message_exchange.ez
     restart: unless-stopped
-    command:
-      - bash
-      - -c
-      - |
-        rabbitmq-plugins enable rabbitmq_delayed_message_exchange --offline
-        rabbitmq-server
 
 volumes:
   pgdata:

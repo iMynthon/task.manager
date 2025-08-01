@@ -13,9 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static com.mynthon.task.manager.reminder.internal.model.ReminderStatus.SENT;
+import static com.mynthon.task.manager.reminder.internal.model.ReminderStatus.WAITING;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +30,12 @@ public class ReminderService {
     private final ReminderMapper reminderMapper;
 
     @Transactional
-    public ReminderResponse save(ReminderRequest request){
+    public void save(ReminderRequest request){
         Reminder reminder = reminderMapper.requestToEntity(request);
         Task task = taskService.findById(request.getTaskId());
         reminder.setTask(task);
         reminder.setUser(task.getUser());
-        return reminderMapper.entityToResponse(reminderRepository.save(reminder));
+        reminderRepository.save(reminder);
     }
 
     @Transactional(readOnly = true)
@@ -46,8 +49,15 @@ public class ReminderService {
         return String.format("Напоминание под идентификатором - %s успешно удалено",id);
     }
 
+    @Transactional(readOnly = true)
+    public List<ReminderResponse> checkWaitingReminder(){
+        List<Reminder> reminderList = reminderRepository.findByStatusAndTime(WAITING.toString(), LocalDateTime.now());
+        return reminderList.isEmpty() ? Collections.emptyList() : reminderList.stream().map(reminderMapper::entityToResponse)
+                .toList();
+    }
+
     @Transactional
     public void setReminderStatus(Integer id){
-        reminderRepository.setStatusReminder(SENT,id);
+        reminderRepository.setStatusReminder(SENT.toString(),id);
     }
 }

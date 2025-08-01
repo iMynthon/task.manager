@@ -1,6 +1,5 @@
 package com.mynthon.task.manager.reminder.events;
 
-import com.mynthon.task.manager.common.configuration.RabbitMQConfig;
 import com.mynthon.task.manager.reminder.dto.request.ReminderRequest;
 import com.mynthon.task.manager.reminder.dto.response.ReminderResponse;
 
@@ -10,9 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static com.mynthon.task.manager.common.configuration.RabbitMQConfig.*;
 import static com.mynthon.task.manager.reminder.internal.model.ReminderStatus.WAITING;
@@ -20,6 +21,7 @@ import static com.mynthon.task.manager.reminder.internal.model.ReminderStatus.WA
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@EnableScheduling
 public class ReminderListener {
 
     private final ReminderService service;
@@ -28,18 +30,23 @@ public class ReminderListener {
     @RabbitListener(queues = REMINDER_QUEUE)
     public void handleReminderAssigned(@Payload ReminderRequest request){
         log.info("Сохранение напоминание пользователя - {}",request.getUsername());
-        long delayMillis = ChronoUnit.MILLIS.between(LocalDateTime.now(), request.getTime());
-        if(delayMillis < 0){
+        if(request.getTime().isBefore(LocalDateTime.now())){
             log.info("Время напоминание просрочено, некорректное время - {}",request.getTime());
             return;
         }
         request.setStatus(WAITING);
-        ReminderResponse response = service.save(request);
-        log.info("Новое напоминание - {}",response);
-        log.info("Задержка отправки: {} мс ({} минут)", delayMillis, delayMillis / 60000.0);
-        rabbitTemplate.convertAndSend(REMINDER_EVENTS_EXCHANGE, USER_REMINDER_RT_KEY,response, msg -> {
-           msg.getMessageProperties().setDelayLong(delayMillis);
-           return msg;
-        });
+        service.save(request);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void reminderMessage(){
+        List<ReminderResponse> list = service.checkWaitingReminder();
+        if(!list.isEmpty()){
+            log.info("Напоминания - {}",list.size());
+            for(ReminderResponse rm : list){
+                log.info("Напоминания для пользователя - {}",rm.username());
+                rabbitTemplate.convertAndSend(REMINDER_EVENTS_EXCHANGE, USER_REMINDER_RT_KEY,rm);
+            }
+        }
     }
 }

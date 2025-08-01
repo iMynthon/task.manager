@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -15,7 +16,10 @@ public interface ReminderRepository extends JpaRepository<Reminder,Integer> {
 
     List<Reminder> findByUserUsernameAndTaskId(String username, Integer id);
 
+    @Query(value = "SELECT * from reminders where status = :status AND time <= :time", nativeQuery = true)
+    List<Reminder> findByStatusAndTime(@Param("status") String status, @Param("time") LocalDateTime time);
+
     @Modifying
     @Query(value = "UPDATE reminders SET status = :status WHERE id = :id", nativeQuery = true)
-    void setStatusReminder(@Param("status") ReminderStatus status, @Param("id") Integer id);
+    void setStatusReminder(@Param("status") String status, @Param("id") Integer id);
 }
