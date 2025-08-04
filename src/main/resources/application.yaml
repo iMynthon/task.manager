@@ -52,7 +52,3 @@ logging:
                 TaskFeignClient: debug
   pattern:
     console: '%clr(%d{HH:mm:ss}){faint} %clr(%-5level) %clr([%logger{0}]){cyan} %clr(:){faint} %m%n'
-telegram:
-  bot:
-    token: 8013721798:AAHRcplBYRByZmjAB4C1ZGFnBsheShAcviQ
-    username: Task Manager Bot
