@@ -1,10 +1,10 @@
 package com.mynthon.task.manager.bot.handler;
 
 import com.mynthon.task.manager.common.feign.TaskFeignClient;
-import com.mynthon.task.manager.task.dto.request.TaskIsCompleted;
-import com.mynthon.task.manager.task.dto.request.TaskRequest;
-import com.mynthon.task.manager.task.dto.response.AllTaskResponse;
-import com.mynthon.task.manager.task.dto.response.TaskResponse;
+import com.mynthon.task.manager.task.api.dto.request.TaskIsCompleted;
+import com.mynthon.task.manager.task.api.dto.request.TaskRequest;
+import com.mynthon.task.manager.task.api.dto.response.AllTaskResponse;
+import com.mynthon.task.manager.task.api.dto.response.TaskResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

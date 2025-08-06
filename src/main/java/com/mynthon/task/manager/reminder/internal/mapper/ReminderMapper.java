@@ -1,16 +1,18 @@
 package com.mynthon.task.manager.reminder.internal.mapper;
 
-import com.mynthon.task.manager.reminder.dto.request.ReminderRequest;
-import com.mynthon.task.manager.reminder.dto.response.AllReminderResponse;
-import com.mynthon.task.manager.reminder.dto.response.ReminderResponse;
+import com.mynthon.task.manager.reminder.api.dto.request.ReminderRequest;
+import com.mynthon.task.manager.reminder.api.dto.response.AllReminderResponse;
+import com.mynthon.task.manager.reminder.api.dto.response.ReminderResponse;
 import com.mynthon.task.manager.reminder.internal.model.Reminder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.modulith.Modulithic;
 
 import java.util.List;
 
+@Modulithic
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ReminderMapper {

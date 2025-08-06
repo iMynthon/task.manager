@@ -7,6 +7,18 @@ plugins {
 group = "com.mynthon"
 version = "0.0.1-SNAPSHOT"
 
+tasks {
+	jar {
+		enabled = false
+	}
+	bootJar {
+		archiveClassifier.set("boot")
+		springBoot {
+			mainClass.set("com.mynthon.task.manager.TaskManagerApplication")
+		}
+	}
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -34,9 +46,7 @@ dependencies {
 	implementation("org.telegram:telegrambots-spring-boot-starter:6.9.7.1")
 	implementation("org.liquibase:liquibase-core")
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
-	implementation("org.springframework.modulith:spring-modulith-events-api")
 	implementation("org.springframework.modulith:spring-modulith-starter-core")
-	implementation("org.springframework.modulith:spring-modulith-events-amqp")
 	implementation("org.springframework.modulith:spring-modulith-starter-jpa")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")

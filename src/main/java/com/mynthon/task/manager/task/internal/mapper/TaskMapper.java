@@ -1,16 +1,18 @@
 package com.mynthon.task.manager.task.internal.mapper;
 
-import com.mynthon.task.manager.task.dto.request.TaskRequest;
-import com.mynthon.task.manager.task.dto.response.AllTaskResponse;
-import com.mynthon.task.manager.task.dto.response.TaskResponse;
+import com.mynthon.task.manager.task.api.dto.request.TaskRequest;
+import com.mynthon.task.manager.task.api.dto.response.AllTaskResponse;
+import com.mynthon.task.manager.task.api.dto.response.TaskResponse;
 import com.mynthon.task.manager.task.internal.model.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.modulith.Modulithic;
 
 import java.util.List;
 
+@Modulithic
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TaskMapper {

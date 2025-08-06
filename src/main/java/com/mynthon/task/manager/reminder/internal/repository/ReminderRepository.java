@@ -1,7 +1,6 @@
 package com.mynthon.task.manager.reminder.internal.repository;
 
 import com.mynthon.task.manager.reminder.internal.model.Reminder;
-import com.mynthon.task.manager.reminder.internal.model.ReminderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface ReminderRepository extends JpaRepository<Reminder,Integer> {
+
 
     List<Reminder> findByUserUsernameAndTaskId(String username, Integer id);
 

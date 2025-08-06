@@ -4,15 +4,15 @@ import com.mynthon.task.manager.task.internal.model.Task;
 import com.mynthon.task.manager.user.internal.model.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
+import org.springframework.modulith.Modulithic;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Entity(name = "reminders")
+@Modulithic
 public class Reminder {
 
     @Id

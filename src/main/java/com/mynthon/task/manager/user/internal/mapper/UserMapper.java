@@ -1,8 +1,8 @@
 package com.mynthon.task.manager.user.internal.mapper;
 
-import com.mynthon.task.manager.user.dto.request.UserRequest;
-import com.mynthon.task.manager.user.dto.response.AllUserResponse;
-import com.mynthon.task.manager.user.dto.response.UserResponse;
+import com.mynthon.task.manager.user.api.dto.request.UserRequest;
+import com.mynthon.task.manager.user.api.dto.response.AllUserResponse;
+import com.mynthon.task.manager.user.api.dto.response.UserResponse;
 import com.mynthon.task.manager.user.internal.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;

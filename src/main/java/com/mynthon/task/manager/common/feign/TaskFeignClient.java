@@ -1,9 +1,9 @@
 package com.mynthon.task.manager.common.feign;
 
-import com.mynthon.task.manager.task.dto.request.TaskIsCompleted;
-import com.mynthon.task.manager.task.dto.request.TaskRequest;
-import com.mynthon.task.manager.task.dto.response.AllTaskResponse;
-import com.mynthon.task.manager.task.dto.response.TaskResponse;
+import com.mynthon.task.manager.task.api.dto.request.TaskIsCompleted;
+import com.mynthon.task.manager.task.api.dto.request.TaskRequest;
+import com.mynthon.task.manager.task.api.dto.response.AllTaskResponse;
+import com.mynthon.task.manager.task.api.dto.response.TaskResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

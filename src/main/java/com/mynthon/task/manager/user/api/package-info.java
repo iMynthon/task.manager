@@ -1,6 +1,6 @@
-@org.springframework.modulith.ApplicationModule(
+@ApplicationModule(
         type = ApplicationModule.Type.OPEN
 )
-package com.mynthon.task.manager.bot;
+package com.mynthon.task.manager.user.api;
 
 import org.springframework.modulith.ApplicationModule;

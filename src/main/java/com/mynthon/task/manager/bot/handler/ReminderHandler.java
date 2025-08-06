@@ -1,7 +1,6 @@
 package com.mynthon.task.manager.bot.handler;
 
-import com.mynthon.task.manager.common.configuration.RabbitMQConfig;
-import com.mynthon.task.manager.reminder.dto.request.ReminderRequest;
+import com.mynthon.task.manager.reminder.api.dto.request.ReminderRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

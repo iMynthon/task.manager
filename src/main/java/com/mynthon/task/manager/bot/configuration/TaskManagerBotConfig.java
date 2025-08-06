@@ -16,4 +16,9 @@ public class TaskManagerBotConfig {
         return api;
 
     }
+
+    @Bean
+    public DefaultBotSession botSession(){
+        return new DefaultBotSession();
+    }
 }

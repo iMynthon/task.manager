@@ -22,7 +22,8 @@ bin/
 *.iws
 *.iml
 *.ipr
-*.application.yaml
+application.yaml
+docker-compose.yaml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
