@@ -4,15 +4,12 @@ import com.mynthon.task.manager.task.internal.model.Task;
 import com.mynthon.task.manager.user.internal.model.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.modulith.Modulithic;
-
 import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Entity(name = "reminders")
-@Modulithic
 public class Reminder {
 
     @Id
@@ -20,7 +17,7 @@ public class Reminder {
     private Integer id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "user_username",referencedColumnName = "username")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})

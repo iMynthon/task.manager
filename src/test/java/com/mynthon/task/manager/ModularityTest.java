@@ -3,6 +3,7 @@ package com.mynthon.task.manager;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.modulith.core.ApplicationModules;
+import org.springframework.modulith.docs.Documenter;
 
 @SpringBootTest
 public class ModularityTest {
@@ -21,5 +22,9 @@ public class ModularityTest {
         ApplicationModules modules = ApplicationModules.of(TaskManagerApplication.class);
         modules.forEach(System.out::println);
         modules.verify();
+
+        new Documenter(modules)
+                .writeModulesAsPlantUml()
+                .writeIndividualModulesAsPlantUml();
     }
 }

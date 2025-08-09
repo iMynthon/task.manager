@@ -16,18 +16,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String TASK_QUEUE = "key.task.queue";
     public static final String REMINDER_QUEUE = "key.reminder.queue";
     public static final String USER_REMINDER_QUEUE = "key.reminder.task.queue";
 
-
-    public static final String TASK_RT_KEY = "*.task.queue";
     public static final String REMINDER_RT_KEY = "*.reminder.queue";
     public static final String USER_REMINDER_RT_KEY = "*.reminder.task.queue";
 
@@ -38,12 +32,6 @@ public class RabbitMQConfig {
     @Bean
     public Queue userQueue(){
         return QueueBuilder.durable(USER_REMINDER_QUEUE)
-                .build();
-    }
-
-    @Bean
-    public Queue taskQueue() {
-        return QueueBuilder.durable(TASK_QUEUE)
                 .build();
     }
 
@@ -79,13 +67,6 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(userQueue())
                 .to(delayedReminderExchange())
                 .with(USER_REMINDER_RT_KEY);
-    }
-
-    @Bean
-    public Binding taskBind(){
-        return BindingBuilder.bind(taskQueue())
-                .to(topicTaskManager())
-                .with(TASK_RT_KEY);
     }
 
     @Bean

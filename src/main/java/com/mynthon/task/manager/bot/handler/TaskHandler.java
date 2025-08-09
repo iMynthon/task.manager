@@ -1,10 +1,15 @@
 package com.mynthon.task.manager.bot.handler;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mynthon.task.manager.common.exception.EntityNotFoundException;
 import com.mynthon.task.manager.common.feign.TaskFeignClient;
+import com.mynthon.task.manager.task.api.dto.request.TaskDeleteRequest;
 import com.mynthon.task.manager.task.api.dto.request.TaskIsCompleted;
 import com.mynthon.task.manager.task.api.dto.request.TaskRequest;
 import com.mynthon.task.manager.task.api.dto.response.AllTaskResponse;
 import com.mynthon.task.manager.task.api.dto.response.TaskResponse;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -52,20 +57,32 @@ public class TaskHandler {
 
     public SendMessage getTasks(Long chatId, String username) {
         log.info("Вывод всех созданных задач пользователя - {}", username);
-        AllTaskResponse response = taskFeignClient.findByMeAll(username);
-        String message = response.listTasks().stream()
-                .map(task -> String.format(
-                        "%s", createOutputTask(task)
-                ))
-                .collect(Collectors.joining("\n\n"));
-        if (response.listTasks().isEmpty()) {
-            return new SendMessage(chatId.toString(), "Task list is Empty");
+        try {
+            AllTaskResponse response = taskFeignClient.findByMeAll(username);
+            String message = response.listTasks().stream()
+                    .map(task -> String.format(
+                            "%s", createOutputTask(task)
+                    ))
+                    .collect(Collectors.joining("\n\n"));
+            if (response.listTasks().isEmpty()) {
+                return new SendMessage(chatId.toString(), "Список задач пуст");
+            }
+            return SendMessage.builder()
+                    .chatId(chatId)
+                    .text(message + "\n\n<b>Общее количество задач: " + response.listTasks().size() + "</b>")
+                    .parseMode("HTML")
+                    .build();
+        } catch (Exception fe){
+            log.info("Ошибка запроса - {}",fe.getMessage());
+            String message = "";
+            if(fe.getMessage().contains("404")){
+                message = "[{" + fe.getMessage().substring(fe.getMessage().lastIndexOf(":") + 1);
+            }
+            return SendMessage.builder()
+                    .chatId(chatId)
+                    .text(message.isEmpty() ? fe.getMessage() : message)
+                    .build();
         }
-        return SendMessage.builder()
-                .chatId(chatId)
-                .text(message + "<b>\nОбщее количество задач: " + response.listTasks().size() + "</b>")
-                .parseMode("HTML")
-                .build();
     }
 
     private String createOutputTask(TaskResponse response) {
@@ -76,8 +93,8 @@ public class TaskHandler {
                         <b>Статус:</b> %s
                         <b>Создано:</b> <i>%s</i>
                         """, response.id(), escapeHtml(response.name()), escapeHtml(response.content()),
-                response.isCompleted() ? "Выполнено" : "В процессе -> " + TASK_COMPLETE  + response.id(),
-                escapeHtml(response.createAt().toString()));
+                response.isCompleted() ? "<b>Выполнено</b>" : "<b>В процессе: -> </b>" + TASK_COMPLETE  + response.id(),
+                escapeHtml(response.createAt().toString())) + "<b>Удалить: -></b> " + TASK_DELETE + response.id();
     }
 
     private String escapeHtml(String text) {
@@ -125,12 +142,17 @@ public class TaskHandler {
     }
 
 
-    public SendMessage taskCommandIsComplete(Long chatId,String message,String username){
-        Integer id = Integer.parseInt(message.substring(message.length() - 1));
-        String result = taskFeignClient.updateIsCompleted(new TaskIsCompleted(id,username,true));
+    public SendMessage taskCommandIsCompleteAndDelete(Long chatId, String message, String username){
+        String result;
+        int id = Integer.parseInt(message.substring(message.contains(TASK_COMPLETE) ? TASK_COMPLETE.length() : TASK_DELETE.length()));
+        if(message.contains(TASK_COMPLETE)) {
+            result = taskFeignClient.updateIsCompleted(new TaskIsCompleted(id, username, true));
+        } else {
+            result = taskFeignClient.deleteMeTask(new TaskDeleteRequest(id, username));
+        }
         return SendMessage.builder()
                 .chatId(chatId)
-                .text(result)
+                .text(result.isEmpty() ? "Некорреткный запрос" : result)
                 .build();
     }
 

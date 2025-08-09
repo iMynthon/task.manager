@@ -1,4 +1,4 @@
-package com.mynthon.task.manager.reminder.internal.mapper;
+package com.mynthon.task.manager.common.mapper;
 
 import com.mynthon.task.manager.reminder.api.dto.request.ReminderRequest;
 import com.mynthon.task.manager.reminder.api.dto.response.AllReminderResponse;

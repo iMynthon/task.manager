@@ -1,4 +1,4 @@
-package com.mynthon.task.manager.task.internal.mapper;
+package com.mynthon.task.manager.common.mapper;
 
 import com.mynthon.task.manager.task.api.dto.request.TaskRequest;
 import com.mynthon.task.manager.task.api.dto.response.AllTaskResponse;

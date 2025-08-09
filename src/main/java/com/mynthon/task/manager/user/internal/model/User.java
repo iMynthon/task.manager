@@ -5,7 +5,9 @@ import com.mynthon.task.manager.task.internal.model.Task;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import java.util.List;
+
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
@@ -18,8 +20,6 @@ public class User {
     private Integer id;
 
     private String username;
-
-    private String email;
 
     @Column(name = "chat_id")
     private Long chatId;

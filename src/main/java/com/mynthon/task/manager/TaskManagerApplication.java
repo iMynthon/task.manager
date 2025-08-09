@@ -7,7 +7,7 @@ import org.springframework.modulith.Modulithic;
 
 @SpringBootApplication
 @EnableFeignClients
-@Modulithic(sharedModules = "common", additionalPackages = {"com.mynthon.task.manager.*.internal.model","com.mynthon.task.manager.*.internal.mapper"})
+@Modulithic(sharedModules = "common")
 public class TaskManagerApplication {
 
 	public static void main(String[] args) {

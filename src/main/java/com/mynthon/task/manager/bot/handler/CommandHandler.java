@@ -18,17 +18,20 @@ public class CommandHandler {
 
     public SendMessage handlerMessage(String message, String username, Long chatId) {
         String state = checkoutState(chatId);
+        if(message.contains(TASK_COMPLETE) || message.contains(TASK_DELETE) || message.contains(REMINDER_READ)){
+            return completeDeleteAndRead(username,message,chatId);
+        }
         if(!state.isBlank()) {
             return stateMessageTaskOrReminder(state, username, message, chatId);
         }
         return switch (message) {
             case START -> startMessage(username, chatId);
             case HELP -> helpMessage(chatId);
-//            case REGISTERED -> inlineKeyboardNewUser(username, chatId);
             case ADD_TASK -> taskHandler.inlineKeyboardNewTask(chatId);
             case TASK -> taskHandler.getTasks(chatId, username);
             case EDIT_TASK_NAME,EDIT_TASK_CONTENT -> taskHandler.handleTaskEditor(chatId,message);
             case REMINDER_TASK -> reminderHandler.inlineKeyboardNewReminder(chatId);
+            case REMINDER -> reminderHandler.getReminders(chatId,username);
             case REMINDER_TASK_ID, REMINDER_TIME -> reminderHandler.handlerReminderEditor(chatId,message);
             default -> SendMessage.builder().chatId(chatId).text(username).text("Неизвестная команда").build();
         };
@@ -44,6 +47,18 @@ public class CommandHandler {
         }
     }
 
+    private SendMessage completeDeleteAndRead(String username, String message, Long chatId){
+        log.info("Выполнение команды {} - пользователем - {}",message,username);
+        SendMessage sendMessage = new SendMessage();
+        if(message.contains(TASK_COMPLETE) || message.contains(TASK_DELETE)){
+            sendMessage = taskHandler.taskCommandIsCompleteAndDelete(chatId, message, username);
+        }
+        else if(message.contains(REMINDER_READ)){
+            sendMessage = reminderHandler.readReminder(chatId,message);
+        }
+        return sendMessage;
+    }
+
     private SendMessage stateMessageTaskOrReminder(String state, String username, String message, Long chatId){
         SendMessage sendMessage = new SendMessage();
         if(state.equals(EDIT_TASK_NAME) || state.equals(EDIT_TASK_CONTENT)){
@@ -52,10 +67,6 @@ public class CommandHandler {
         } else if (state.equals(REMINDER_TASK_ID) || state.equals(REMINDER_TIME)) {
             log.info("Создание напоминание для пользователя - {}",username);
             sendMessage = reminderHandler.createReminder(chatId,username,message,state);
-        }
-        log.info("Поймано сообщение пользователя - {} - {}", username, message);
-        if(message.contains(TASK_COMPLETE)){
-            sendMessage = taskHandler.taskCommandIsComplete(chatId, message, username);
         }
         return sendMessage;
     }
@@ -77,33 +88,8 @@ public class CommandHandler {
                 /add_task -> Добавление задачи. Вводится по очереди 2 поля: {название задачи} - {описание задачи}.
                 /tasks -> Просмотр всех своих задач.
                 /reminder_task -> Поставить напоминание или запланировать выполнение задачи
+                Еще 2 команды выполняются по нажатию на них, вводить их не надо -> /complete и /delete, по нажатию они выполняться автоматически.
                 """;
         return new SendMessage(chatId.toString(), commandsHelp);
     }
-
-
-//    private SendMessage inlineKeyboardNewUser(String username, Long chatId) {
-//        log.info("Регистрация пользователя - {}", username);
-//        return SendMessage.builder()
-//                .chatId(chatId)
-//                .text(String.format("""
-//                        Привет %s
-//                        Заполни форму регистрации\
-//
-//                        Выберите поле для редактирования:""", username))
-//                .parseMode("MarkDownV2")
-//                .replyMarkup(InlineKeyboardMarkup.builder()
-//                        .keyboardRow(List.of(
-//                                InlineKeyboardButton.builder()
-//                                        .text("✏️ Email")
-//                                        .callbackData("edit_email_user")
-//                                        .build(),
-//                                InlineKeyboardButton.builder()
-//                                        .text("✏️ password")
-//                                        .callbackData("edit_password_user")
-//                                        .build()))
-//                        .build())
-//                .build();
-//    }
-
 }

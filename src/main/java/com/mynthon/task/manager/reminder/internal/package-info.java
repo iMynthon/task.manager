@@ -1,7 +1,6 @@
 @org.springframework.modulith.ApplicationModule(
+        displayName = "Internal reminder",
         allowedDependencies = {"user.internal","task.internal"},
-        type = ApplicationModule.Type.CLOSED
+        type = org.springframework.modulith.ApplicationModule.Type.OPEN
 )
 package com.mynthon.task.manager.reminder.internal;
-
-import org.springframework.modulith.ApplicationModule;

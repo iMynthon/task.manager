@@ -1,5 +1,4 @@
 package com.mynthon.task.manager.common.exception;
-
 import com.mynthon.task.manager.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

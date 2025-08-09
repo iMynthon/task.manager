@@ -1,6 +1,8 @@
 package com.mynthon.task.manager.bot.handler;
 
+import com.mynthon.task.manager.common.feign.ReminderFeignClient;
 import com.mynthon.task.manager.reminder.api.dto.request.ReminderRequest;
+import com.mynthon.task.manager.reminder.api.dto.response.AllReminderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.mynthon.task.manager.bot.utils.StringTelegramBotCommand.*;
 import static com.mynthon.task.manager.bot.utils.StringUtils.*;
@@ -29,7 +32,9 @@ public class ReminderHandler {
 
     public static final Map<Long, String> stateUserReminderEdit = new HashMap<>();
     private static final Map<Long, ReminderRequest> createReminderRequest = new HashMap<>();
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
     private final RabbitTemplate rabbitTemplate;
+    private final ReminderFeignClient reminderFeignClient;
 
     public SendMessage inlineKeyboardNewReminder(Long chatId) {
         log.info("Создание напоминания для задачи - {}", chatId);
@@ -51,7 +56,8 @@ public class ReminderHandler {
             case REMINDER_TIME -> {
                 log.info("Изменение описания задачи - {} - {}", chatId, reminderRequest);
                 stateUserReminderEdit.put(chatId, reminderRequest);
-                return new SendMessage(chatId.toString(), "Введите время напоминания в формате - {2025.12.30 18:00}:");
+                return new SendMessage(chatId.toString(), "Введите время напоминания в формате -> " +
+                        "{Год.Месяц.День} {Часы:Минуты}  {2025.12.30 18:00}:");
             }
             default -> {
                 return new SendMessage(chatId.toString(), "Неизвестное действие");
@@ -67,7 +73,7 @@ public class ReminderHandler {
             request.setTaskId(Integer.parseInt(message));
             sendMessage = createSendMessageFromReminder(chatId,request,username, REMINDER_TASK_ID);
         } else if (state.equals(REMINDER_TIME)) {
-            request.setTime(LocalDateTime.parse(message, DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")));
+            request.setTime(LocalDateTime.parse(message, format));
             sendMessage = createSendMessageFromReminder(chatId,request,username,
                     REMINDER_TIME + ": " + request.getTime());
         }
@@ -79,10 +85,39 @@ public class ReminderHandler {
             stateUserReminderEdit.remove(chatId);
             sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
             sendMessage.setChatId(chatId);
-            sendMessage.setText(REMINDER_CREATE + ": " + request.getTime());
+            sendMessage.setText(REMINDER_CREATE + ": " + request.getTime().format(format));
             return sendMessage;
         }
         return sendMessage;
+    }
+
+    public SendMessage getReminders(Long chatId,String username){
+        log.info("Запрос на просмотр всех упоминаний от - {}",username);
+        AllReminderResponse allReminderResponse = reminderFeignClient.getAll(username);
+        if(allReminderResponse.reminderList().isEmpty()){
+            return SendMessage.builder()
+                    .chatId(chatId)
+                    .text("Список напоминаний пуст")
+                    .build();
+        }
+        String userReminder = "Список напоминаний пользователя %s\n\n";
+        String message = userReminder + allReminderResponse.reminderList()
+                .stream().map(reminder -> createMessage(reminder.taskName(),reminder.time().format(format)))
+                .collect(Collectors.joining("\n\n"));
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text(message)
+                .parseMode("HTML")
+                .build();
+    }
+
+    public SendMessage readReminder(Long chatId,String message){
+        Integer id = Integer.parseInt(message.substring(REMINDER_READ.length()));
+        String messageResponse = reminderFeignClient.accepted(id);
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text(messageResponse)
+                .build();
     }
 
     private SendMessage createSendMessageFromReminder(Long chatId,ReminderRequest request,
@@ -117,5 +152,12 @@ public class ReminderHandler {
         keyboardMarkup.setOneTimeKeyboard(true);
         keyboardMarkup.setSelective(true);
         return keyboardMarkup;
+    }
+
+    private String createMessage(String taskName,String timeStr){
+        return String.format("""
+                <b>Название задачи:</b> {%s}
+                <b>Запланированное время: </b> {%s}
+                """,taskName,timeStr);
     }
 }

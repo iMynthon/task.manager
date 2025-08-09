@@ -2,12 +2,8 @@ package com.mynthon.task.manager.task.internal.model;
 import com.mynthon.task.manager.reminder.internal.model.Reminder;
 import com.mynthon.task.manager.user.internal.model.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.modulith.Modulithic;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +11,6 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Entity(name = "tasks")
-@Modulithic
 public class Task {
 
     @Id
@@ -27,7 +22,7 @@ public class Task {
     private String content;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "user_username",referencedColumnName = "username")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @CreationTimestamp

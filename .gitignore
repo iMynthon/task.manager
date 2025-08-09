@@ -22,7 +22,7 @@ bin/
 *.iws
 *.iml
 *.ipr
-application.yaml
+src/main/resources/application.yaml
 docker-compose.yaml
 out/
 !**/src/main/**/out/

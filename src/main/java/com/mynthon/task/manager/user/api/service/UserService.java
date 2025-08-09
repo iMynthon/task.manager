@@ -1,12 +1,9 @@
 package com.mynthon.task.manager.user.api.service;
 
 import com.mynthon.task.manager.common.exception.EntityNotFoundException;
-import com.mynthon.task.manager.user.api.dto.request.UserRequest;
-import com.mynthon.task.manager.user.api.dto.response.AllUserResponse;
-import com.mynthon.task.manager.user.api.dto.response.UserResponse;
-import com.mynthon.task.manager.user.internal.mapper.UserMapper;
 import com.mynthon.task.manager.user.internal.model.User;
 import com.mynthon.task.manager.user.internal.repository.UserRepository;
+import com.mynthon.task.manager.user.internal.repository.projections.UserIdProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,31 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
-    @Transactional(readOnly = true)
-    public UserResponse findById(Integer id){
-        log.info("Поиск пользователя по id - {}",id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User под идентификатором - {%s} не зарегистрирован",id)));
-        return userMapper.entityToResponse(user);
+    @Transactional
+    public UserIdProjection userIdProjection(String username){
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Пользователь под таким никнеймом - {%s} не зарегистрирован в система, ошибка запроса",
+                        username)));
     }
 
-    @Transactional(readOnly = true)
-    public AllUserResponse findAll(){
-        log.info("Поиск всех пользолвателей");
-        return userMapper.listEntityToListResponse(userRepository.findAll());
-    }
-
-    public UserResponse save(UserRequest request){
-        log.info("Сохранение нового пользователя - {}",request);
-        User user = userMapper.requestToEntity(request);
-        return userMapper.entityToResponse(userRepository.save(user));
-    }
-
-    public String delete(Integer id){
-        log.info("Удаление пользователя под id - {}",id);
-        userRepository.deleteById(id);
-        return String.format("User под идентификатором - %s успешно удален",id);
+    @Transactional
+    public User existsUser(String username,Long chatId){
+        if(!userRepository.existsUserByChatId(chatId)){
+            return User.builder().username(username).chatId(chatId).build();
+        }
+        return userRepository.findByChatId(chatId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Пользователь с таким - {%s} идентификатором не найден, ошибка запроса",chatId)));
     }
 }

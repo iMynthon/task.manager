@@ -24,8 +24,8 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all/me")
-    private AllTaskResponse findByMeAll(@RequestParam String nickname){
-        return taskService.findByMeTasks(nickname);
+    private AllTaskResponse findByMeAll(@RequestParam String username){
+        return taskService.findByMeTasks(username);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,7 +42,7 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/delete")
-    private String deleteMeTask(TaskDeleteRequest deleteRequest){
+    private String deleteMeTask(@RequestBody TaskDeleteRequest deleteRequest){
         return taskService.delete(deleteRequest);
     }
 

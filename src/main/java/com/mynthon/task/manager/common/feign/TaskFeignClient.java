@@ -1,5 +1,6 @@
 package com.mynthon.task.manager.common.feign;
 
+import com.mynthon.task.manager.task.api.dto.request.TaskDeleteRequest;
 import com.mynthon.task.manager.task.api.dto.request.TaskIsCompleted;
 import com.mynthon.task.manager.task.api.dto.request.TaskRequest;
 import com.mynthon.task.manager.task.api.dto.response.AllTaskResponse;
@@ -17,9 +18,13 @@ public interface TaskFeignClient {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all/me")
-    AllTaskResponse findByMeAll(@RequestParam String nickname);
+    AllTaskResponse findByMeAll(@RequestParam String username);
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/isCompleted")
     String updateIsCompleted(@RequestBody TaskIsCompleted isCompleted);
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/delete")
+    String deleteMeTask(@RequestBody TaskDeleteRequest deleteRequest);
 }
