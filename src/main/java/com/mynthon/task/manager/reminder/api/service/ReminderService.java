@@ -52,7 +52,7 @@ public class ReminderService {
 
     @Transactional(readOnly = true)
     public List<ReminderResponse> checkWaitingReminder(){
-        List<Reminder> reminderList = reminderRepository.findByStatusAndTime(WAITING.toString(),SENT.toString(),LocalDateTime.now());
+        List<Reminder> reminderList = reminderRepository.findByStatusAndTime(LocalDateTime.now());
         return reminderList.isEmpty() ? Collections.emptyList() : reminderList.stream().map(reminderMapper::entityToResponse)
                 .toList();
     }

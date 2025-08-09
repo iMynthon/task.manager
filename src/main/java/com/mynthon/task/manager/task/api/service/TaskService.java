@@ -53,16 +53,14 @@ public class TaskService {
     @Transactional
     public String isCompleted(TaskIsCompleted isCompleted){
         log.info("Задача выолнена - {}",isCompleted);
-        UserIdProjection id = userService.userIdProjection(isCompleted.username());
-        taskRepository.isCompletedTrue(isCompleted.id(),id.getId(),isCompleted.isCompleted());
+        taskRepository.isCompletedTrue(isCompleted.id(),isCompleted.isCompleted());
         return String.format("Поздравляю %s  - завершением задачи",isCompleted.username());
     }
 
     @Transactional
     public String delete(TaskDeleteRequest deleteRequest){
         log.info("Удаление задачи - {}",deleteRequest);
-        UserIdProjection id = userService.userIdProjection(deleteRequest.nickname());
-        taskRepository.deleteTask(deleteRequest.id(),id.getId());
+        taskRepository.deleteById(deleteRequest.id());
         return String.format("Задача пользователя %s под id - %s удалена",
                 deleteRequest.nickname(),deleteRequest.id());
     }

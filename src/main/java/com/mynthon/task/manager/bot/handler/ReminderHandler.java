@@ -100,7 +100,7 @@ public class ReminderHandler {
                     .text("Список напоминаний пуст")
                     .build();
         }
-        String userReminder = "Список напоминаний пользователя %s\n\n";
+        String userReminder = String.format("<b>Список напоминаний пользователя %s</b>\n\n",username);
         String message = userReminder + allReminderResponse.reminderList()
                 .stream().map(reminder -> createMessage(reminder.taskName(),reminder.time().format(format)))
                 .collect(Collectors.joining("\n\n"));
@@ -112,6 +112,7 @@ public class ReminderHandler {
     }
 
     public SendMessage readReminder(Long chatId,String message){
+        log.info("Запрос прочитать уведомление от пользователя - {}",message);
         Integer id = Integer.parseInt(message.substring(REMINDER_READ.length()));
         String messageResponse = reminderFeignClient.accepted(id);
         return SendMessage.builder()

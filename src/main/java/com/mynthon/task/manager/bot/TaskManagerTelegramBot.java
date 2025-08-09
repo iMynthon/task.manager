@@ -67,7 +67,8 @@ public class TaskManagerTelegramBot extends TelegramLongPollingBot{
         return List.of(new BotCommand("/start","Начало работы бота"),
                 new BotCommand("/help","Список доступных команд"),
                 new BotCommand("/add_task","Добавление задачи"),
-                new BotCommand("/tasks","Посмотреть все свои задачи"),
+                new BotCommand("/tasks","Просмотр списка задач"),
+                new BotCommand("/reminders","Просмотр списка напоминаний"),
                 new BotCommand("/reminder_task","Поставить напоминание"));
     }
 }

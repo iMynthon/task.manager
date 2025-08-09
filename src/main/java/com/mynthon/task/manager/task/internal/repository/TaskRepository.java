@@ -16,10 +16,6 @@ public interface TaskRepository extends JpaRepository<Task,Integer> {
     List<Task> findByUserId(Integer userId);
 
     @Modifying
-    @Query(value = "UPDATE tasks SET is_completed = :isCompleted WHERE id = :id AND user_id = :userId",nativeQuery = true)
-    void isCompletedTrue(Integer id,Integer userId,boolean isCompleted);
-
-    @Modifying
-    @Query(value = "DELETE from tasks WHERE id = :id AND user_id = :userId",nativeQuery = true)
-    void deleteTask(Integer id,Integer userId);
+    @Query(value = "UPDATE tasks SET is_completed = :isCompleted WHERE id = :id",nativeQuery = true)
+    void isCompletedTrue(Integer id,boolean isCompleted);
 }
