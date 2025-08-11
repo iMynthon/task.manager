@@ -23,4 +23,9 @@ public class ReminderController {
     public String accepted(@PathVariable Integer id){
         return reminderService.acceptedReminder(id);
     }
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}/delete")
+    public String delete(@PathVariable Integer id){
+        return reminderService.deleteReminder(id);
+    }
 }

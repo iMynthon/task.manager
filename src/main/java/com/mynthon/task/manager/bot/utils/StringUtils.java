@@ -1,7 +1,8 @@
 package com.mynthon.task.manager.bot.utils;
 
 public class StringUtils {
-    public static final String USERNAME_EMPTY = "Не указано имя пользователя в настройках телеграмм, укажите для дальнейшей работы с Task Manager Bot";
+    public static final String USERNAME_EMPTY = "Не указано имя пользователя в настройках телеграмм, так как взаиодействие происходит через @username, укажите для дальнейшей работы с Task Manager Bot";
+    public static final String TIME_OVERDUE = "Время напоминания указано неккоректно, оно меньше текущего, введите другое время";
     public static final String TASK_NAME_CREATE = "Название задачи успешно сохранено, выполните следующее дествия";
     public static final String TASK_CONTENT_CREATE = "Описание задачи успешно сохранено, выполните следующее дествия";
     public static final String TASK_CREATE = "Новая задача успешно создана";

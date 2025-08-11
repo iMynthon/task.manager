@@ -1,6 +1,5 @@
 package com.mynthon.task.manager.bot;
 import com.mynthon.task.manager.bot.handler.CommandHandler;
-import com.mynthon.task.manager.bot.utils.StringUtils;
 import com.mynthon.task.manager.common.exception.EmptyInputException;
 import com.mynthon.task.manager.common.exception.SendMessageBotException;
 import lombok.extern.slf4j.Slf4j;

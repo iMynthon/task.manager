@@ -15,4 +15,8 @@ public interface ReminderFeignClient {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/accepted")
     String accepted(@PathVariable Integer id);
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}/delete")
+    String delete(@PathVariable Integer id);
 }

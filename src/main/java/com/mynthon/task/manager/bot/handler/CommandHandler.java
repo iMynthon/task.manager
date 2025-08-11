@@ -18,7 +18,8 @@ public class CommandHandler {
 
     public SendMessage handlerMessage(String message, String username, Long chatId) {
         String state = checkoutState(chatId);
-        if(message.contains(TASK_COMPLETE) || message.contains(TASK_DELETE) || message.contains(REMINDER_READ)){
+        if(message.contains(TASK_COMPLETE) || message.contains(TASK_DELETE)
+                || message.contains(REMINDER_READ) || message.contains(REMINDER_DELETE)){
             return completeDeleteAndRead(username,message,chatId);
         }
         if(!state.isBlank()) {
@@ -53,8 +54,8 @@ public class CommandHandler {
         if(message.contains(TASK_COMPLETE) || message.contains(TASK_DELETE)){
             sendMessage = taskHandler.taskCommandIsCompleteAndDelete(chatId, message, username);
         }
-        else if(message.contains(REMINDER_READ)){
-            sendMessage = reminderHandler.readReminder(chatId,message);
+        else if(message.contains(REMINDER_READ) || message.contains(REMINDER_DELETE)){
+            sendMessage = reminderHandler.readAndDeleteReminder(chatId,message);
         }
         return sendMessage;
     }
@@ -74,7 +75,7 @@ public class CommandHandler {
     private SendMessage startMessage(String username, Long chatId) {
         String startMessage = String.format("Привествую тебя %s в моем task manager bot, " +
                 "здесь можно будет ставить себе задачи и настраивать напоминаия о них.\n" +
-                "Для ознакомления с командами и посмотреть примеры и описания к ним, выполните команду - /help", username);
+                "Для ознакомления с командами и посмотреть примеры и описания к ним, выполните команду -> /help", username);
         return SendMessage.builder()
                 .chatId(chatId)
                 .text(startMessage)
@@ -83,13 +84,17 @@ public class CommandHandler {
 
     private SendMessage helpMessage(Long chatId) {
         String commandsHelp = """
-                /help -> Просмотр всех команд бота
-                /add_task -> Добавление задачи. Вводится по очереди 2 поля: {название задачи} - {описание задачи}.
-                /tasks -> Просмотр всех своих задач.
-                /reminders -> просмотр запланированных напоминаний
-                /reminder_task -> Поставить напоминание или запланировать выполнение задачи
+                /help -> Просмотр всех команд бота.
+                /add_task -> Добавление задачи. Вводится по очереди 2 поля: <b>{Название задачи} - {Описание задачи}</b>.
+                /tasks -> Просмотр всех своих задач, так же можно сразу нажать команды <b>complete</b> и <b>delete</b> что бы отметить задачу отмеченной или удалить ее.
+                /reminders -> Просмотр запланированных напоминаний.
+                /reminder_task -> Поставить напоминание или запланировать выполнение задачи. Вводится оп очереди 2 поля: <b>{Индентификатор задачи} - {Время напоминания}</b>.
                 Еще 2 команды выполняются по нажатию на них, вводить их не надо -> /complete и /delete, они выполняться автоматически.
                 """;
-        return new SendMessage(chatId.toString(), commandsHelp);
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text(commandsHelp)
+                .parseMode("HTML")
+                .build();
     }
 }

@@ -120,7 +120,8 @@ public class TaskHandler {
             stateUserTaskEdit.remove(chatId);
             sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
             sendMessage.setChatId(chatId);
-            sendMessage.setText(String.format("%s: id - %s, name - %s",TASK_CREATE,response.id(),response.name()));
+            sendMessage.setText(String.format("%s: <b>id - %s, name - %s</b>",TASK_CREATE,response.id(),response.name()));
+            sendMessage.setParseMode("HTML");
             return sendMessage;
         }
         return sendMessage;
