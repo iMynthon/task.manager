@@ -1,5 +1,6 @@
 package com.mynthon.task.manager.bot;
 import com.mynthon.task.manager.bot.handler.CommandHandler;
+import com.mynthon.task.manager.bot.utils.StringUtils;
 import com.mynthon.task.manager.common.exception.EmptyInputException;
 import com.mynthon.task.manager.common.exception.SendMessageBotException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
+
+import static com.mynthon.task.manager.bot.utils.StringUtils.USERNAME_EMPTY;
 
 @Component
 @Slf4j
@@ -48,13 +51,20 @@ public class TaskManagerTelegramBot extends TelegramLongPollingBot{
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            try{
             String message = update.getMessage().getText();
             String username = update.getMessage().getChat().getUserName();
             Long chatId = update.getMessage().getChatId();
+            if(username.isBlank()){
+                log.info("Пользователь не определен, не задано имя пользователя в настройках тг - {}",chatId);
+                execute(SendMessage.builder()
+                        .chatId(chatId)
+                        .text(USERNAME_EMPTY)
+                        .build());
+            }
             log.info("Ввод команды пользователем - {}",username);
             SendMessage sendMessage = commandHandler.handlerMessage(message,username, chatId);
-            try {
-                execute(sendMessage);
+            execute(sendMessage);
             } catch (TelegramApiException e) {
                 throw new SendMessageBotException(String.format("Ошибка при отправке ссобщения -> %s",e.getMessage()));
             }

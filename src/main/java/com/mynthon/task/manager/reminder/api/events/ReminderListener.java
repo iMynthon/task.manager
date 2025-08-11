@@ -30,14 +30,18 @@ public class ReminderListener {
 
     @RabbitListener(queues = REMINDER_QUEUE)
     public void handleReminderAssigned(@Payload ReminderRequest request){
-        log.info("Сохранение напоминание пользователя - {}",request.getUsername());
-        if(request.getTime().isBefore(LocalDateTime.now())){
-            log.info("Время напоминание просрочено, некорректное время - {}",request.getTime());
-            return;
+        try {
+            log.info("Сохранение напоминание пользователя - {}", request.getUsername());
+            if (request.getTime().isBefore(LocalDateTime.now())) {
+                log.info("Время напоминание просрочено, некорректное время - {}", request.getTime());
+                return;
+            }
+            request.setStatus(WAITING);
+            log.info("Сохранение напоминания");
+            service.save(request);
+        }catch (AmqpException ae){
+            log.info("Ошибка при прослушивании сообщение - {}",ae.getMessage());
         }
-        request.setStatus(WAITING);
-        log.info("Сохранение напоминания");
-        service.save(request);
     }
 
     @Scheduled(fixedRate = 45000)
