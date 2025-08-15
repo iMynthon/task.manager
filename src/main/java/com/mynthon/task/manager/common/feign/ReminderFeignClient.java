@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient("reminders")
+@FeignClient(name = "reminders")
 public interface ReminderFeignClient {
 
     @ResponseStatus(HttpStatus.OK)

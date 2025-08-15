@@ -81,27 +81,37 @@ public class TaskHandler {
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(message.isEmpty() ? fe.getMessage() : message)
+                    .parseMode("HTML")
                     .build();
         }
     }
 
-    private String createOutputTask(TaskResponse response) {
+    private String createOutputTask(TaskResponse task) {
         return String.format("""
-                        <b>№:</b> <b>%s</b>
-                        <b>Название:</b> %s
-                        <b>Описание:</b> %s
-                        <b>Статус:</b> %s
-                        <b>Создано:</b> <i>%s</i>
-                        """, response.id(), escapeHtml(response.name()), escapeHtml(response.content()),
-                response.isCompleted() ? "<b>Выполнено</b>" : "<b>В процессе: -> </b>" + TASK_COMPLETE  + response.id(),
-                escapeHtml(response.createAt().toString())) + "<b>Удалить: -></b> " + TASK_DELETE + response.id();
+            <b>№:</b> <b>%d</b>
+            <b>Название:</b> %s
+            <b>Описание:</b> %s
+            <b>Статус:</b> %s
+            <b>Создано:</b> <b>%s</b>
+            """,
+                task.id(),
+                escapeHtml(task.name()),
+                escapeHtml(task.content()),
+                task.isCompleted()
+                        ? "✅ <b>Выполнено</b>"
+                        : "🔄 <b>В процессе</b>",
+                escapeHtml(task.createAt().toString()) + String.format("""
+
+                        <b>Задача выполнена:</b>  %s
+                        <b>Удалить задачу:</b>  %s""",TASK_COMPLETE + task.id(),TASK_DELETE + task.id()));
     }
 
-    private String escapeHtml(String text) {
-        if (text == null) return "";
-        return text.replace("&", "&amp;")
+    private String escapeHtml(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
                 .replace("<", "&lt;")
-                .replace(">", "&gt;");
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;");
     }
 
     public SendMessage saveEditHandler(String state,String message, String username, Long chatId) {

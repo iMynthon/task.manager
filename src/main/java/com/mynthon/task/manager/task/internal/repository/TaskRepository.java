@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task,Integer> {
 
     @EntityGraph(attributePaths = {"user"})
-    List<Task> findByUserId(Integer userId);
+    List<Task> findByUserIdAndIsCompletedFalse(Integer userId);
 
     @Modifying
     @Query(value = "UPDATE tasks SET is_completed = :isCompleted WHERE id = :id",nativeQuery = true)

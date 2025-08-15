@@ -38,7 +38,7 @@ public class TaskService {
     public AllTaskResponse findByMeTasks(String username){
         log.info("Поиск задачи по username - {}",username);
         UserIdProjection id = userService.userIdProjection(username);
-        return taskMapper.entityListToResponseList(taskRepository.findByUserId(id.getId()));
+        return taskMapper.entityListToResponseList(taskRepository.findByUserIdAndIsCompletedFalse(id.getId()));
     }
 
     @Transactional

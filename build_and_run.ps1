@@ -16,14 +16,14 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Удаляю старый образ Docker..."
-docker rmi task.manager:v1.2
+docker rmi task.manager:v1.0
 # Игнорируем ошибку, если образ не существует
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Образ не найден (это нормально при первом запуске)" -ForegroundColor Yellow
 }
 
 Write-Host "Собираю новый образ Docker..."
-docker build -t task.manager:v1.2 .
+docker build -t task.manager:v1.0 .
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Ошибка при сборке Docker-образа" -ForegroundColor Red
     exit 1

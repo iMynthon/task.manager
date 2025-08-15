@@ -168,9 +168,10 @@ public class ReminderHandler {
 
     private String createMessage(String taskName,String timeStr,Integer id){
         return String.format("""
-                <b>Название задачи: {%s}
-                Запланированное время: {%s}
-                Удалить напоминание: %s</b>
-                """,taskName,timeStr,REMINDER_DELETE + id);
+        <b>ID:</b> %s
+        <b>Название задачи:</b> %s
+        <b>Запланированное время:</b> %s
+        <b>Удалить напоминание:</b> %s
+       """,id, taskName, timeStr, REMINDER_DELETE + id);
     }
 }
