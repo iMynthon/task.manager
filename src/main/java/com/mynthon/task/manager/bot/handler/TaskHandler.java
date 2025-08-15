@@ -88,7 +88,7 @@ public class TaskHandler {
 
     private String createOutputTask(TaskResponse task) {
         return String.format("""
-            <b>№:</b> <b>%d</b>
+            <b>ID:</b> <b>%d</b>
             <b>Название:</b> %s
             <b>Описание:</b> %s
             <b>Статус:</b> %s
